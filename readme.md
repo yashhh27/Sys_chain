@@ -31,6 +31,36 @@ Key features:
     - Rename / Remove / Sell / Buy for each zombie (see details below).
 
 ---
+## Demo video: [Watch on Google Drive](https://drive.google.com/file/d/1MSnRDXJjOtiWBguyKP0GHEKf_ZnHmpWP/view?usp=sharing)
+
+
+## Improvements Over Starter Code
+
+- **On-chain Zombie NFTs**  
+  - Extended the starter CryptoZombies contracts so zombies are minted and owned as real ERC‑721–style tokens (`ZombieOwnership`), not just front‑end objects.
+  - Frontend uses `getZombiesByOwner` and `zombies(id)` to display actual on‑chain state.
+
+- **Local Kitty Contract Implementation**  
+  - Implemented a full `LocalKittyCore` contract that matches the `KittyInterface` from the tutorial, instead of relying on the real CryptoKitties contract.
+  - Supports on‑chain kitty creation (`createKittyGen0`) and gene storage for future extensions.
+
+- **Zombie Marketplace (on-chain)**  
+  - Added a `ZombieMarketplace` contract that allows listing zombies for sale and buying them with ETH.
+  - Integrated marketplace UI with MetaMask: `Sell` lists a zombie (after `approve`), and `Buy` executes a real ETH + NFT transfer.
+
+- **Modern Frontend with ethers.js + MetaMask**  
+  - Replaced the original basic UI with a modern, dark‑themed single‑page layout (sidebar navigation, card‑based Zombie Barracks and Kitty Den).
+  - Connected the frontend to the deployed contracts using `ethers.js` and MetaMask, so all core actions (connect, create, sell, buy) are real blockchain transactions.
+
+- **Enhanced UX Features**  
+  - Added Zombie army creation (`Create Army`) for quickly minting multiple zombies.
+  - Added per‑zombie actions: Rename (local UI), Remove (local UI cleanup), Sell, and Buy.
+  - Implemented fun demo battles (`Zombie vs Zombie`, `Zombie vs Kitty`) to make the DApp more engaging for the demo.
+
+- **Detailed Run & Demo Instructions**  
+  - Documented end‑to‑end setup: Ganache configuration, Truffle migration, wiring deployed addresses into `index.html`, running the local HTTP server, and demo flow.
+  - Included a demo video link to show the DApp in action.
+
 
 ## Functionality Details
 
@@ -161,3 +191,21 @@ npx truffle compile
 
 # Deploy to Ganache development network
 npx truffle migrate --network development --reset
+
+Add a section like this at the top of readme.md and fill in your real details:
+
+
+## Team Members
+- **Name:** Yash Savaliya  
+  **CWID:** 861444743  
+  **Email:** yashhsavaliya27@csu.fullerton.edu
+
+- **Name:** Siddhesh Khatavkar 
+  **CWID:** 819929126  
+  **Email:** siddheshkhatavkar@csu.fullerton.edu
+
+- **Name:** Sameera Kudligi Mulimani 
+  **CWID:** 813933314  
+  **Email:** sameerakm19@csu.fullerton.edu
+
+
