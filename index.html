@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sys Chain - CryptoZombies DApp</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0b0e14;
+            --panel-bg: rgba(30, 41, 59, 0.6);
+            --primary: #6366f1;
+            --secondary: #4ade80;
+            --accent: #f59e0b;
+            --danger: #f43f5e;
+            --text: #f8fafc;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Fixed Sidebar Navigation with Scrollbar and Full Border */
+        nav {
+            width: 280px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid var(--border);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: fixed;
+            height: 100vh;
+            box-sizing: border-box; /* Ensure padding doesn't affect width */
+            overflow-y: auto; /* Enable vertical scroll if content overflows */
+        }
+
+        /* Adjusting layout within the sidebar for better organization */
+        nav > *:first-child { margin-top: auto; }
+        nav > *:last-child { margin-bottom: auto; }
+
+        .logo-area {
+            font-size: 1.2rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #818cf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Unified Button Styling in Sidebar with Hover Effects */
+        .btn {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 12px;
+            font-size: 0.95rem;
+        }
+
+        .btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateX(5px);
+            box-shadow: 0 10px 20px -10px var(--primary);
+        }
+
+        .btn-connect {
+            background: var(--primary);
+            border: none;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-connect:hover {
+            transform: scale(1.02);
+            background: #4f46e5;
+        }
+
+        /* Stats in Sidebar */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.03);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .stat-val { font-size: 1.5rem; font-weight: 800; color: var(--secondary); }
+        .stat-label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* Battle Feed */
+        .battle-log {
+            background: rgba(245, 158, 11, 0.05);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 40px;
+            text-align: center;
+            color: var(--accent);
+            font-weight: 600;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+
+        /* Main Content with Margin from Fixed Sidebar */
+        main {
+            margin-left: 280px;
+            padding: 40px;
+            width: calc(100% - 280px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Zombie Barracks with Grid and Large Vertical Cards */
+        #zombieList {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .zombie-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .zombie-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 10px 20px -10px var(--primary);
+        }
+
+        .zombie-card img {
+            width: 150px;
+            height: 150px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+
+        .zombie-info {
+            text-align: center;
+        }
+
+        .zombie-action-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .zombie-mini-btn {
+            padding: 8px 15px;
+            font-size: 0.8rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            transition: all 0.2s ease;
+        }
+
+        .zombie-mini-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .buy-button {
+            background-color: var(--secondary) !important;
+            border-color: var(--secondary) !important;
+            color: black !important;
+        }
+
+        .buy-button:hover {
+            background-color: #2fb15c !important;
+        }
+
+        /* Kitty Den with Smaller Horizontal Cards */
+        #kittyList {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .kitty-card {
+            background: var(--panel-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .kitty-card img {
+            width: 70px;
+            height: 70px;
+            background: #000;
+            border-radius: 50%;
+            padding: 5px;
+        }
+
+        .kitty-info {
+            flex: 1;
+        }
+
+        h2 { font-size: 1.2rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+
+    </style>
+    <!-- Ethers.js for contract interaction -->
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+</head>
+<body>
+
+<nav>
+    <div class="logo-area">🧟 CryptoZombies</div>
+    
+    <button class="btn btn-connect" onclick="connectWallet()">🦊 Connect MetaMask</button>
+    
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-val" id="zombieCounter">0</div>
+            <div class="stat-label">Zombies</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-val" id="kittyCounter">0</div>
+            <div class="stat-label">Kitties</div>
+        </div>
+    </div>
+
+    <button class="btn" onclick="createZombie()">🧪 Create Zombie</button>
+    <button class="btn" onclick="createArmy()">🎖️ Create Army</button>
+    <button class="btn" onclick="createKitty()">🐾 Create Kitty</button>
+    <button class="btn" onclick="zombieBattle()">⚔️ Zombie vs Zombie</button>
+    <button class="btn" onclick="zombieVsKitty()">🔥 Zombie vs Kitty</button>
+</nav>
+
+<main>
+    <div class="battle-log" id="result">Ready for Battle? Connect your wallet to begin.</div>
+
+    <div class="army-sections">
+        <section>
+            <h2>🧟 Zombie Barracks</h2>
+            <div id="zombieList"></div>
+        </section>
+        <section style="margin-top: 40px;">
+            <h2>🐱 Kitty Den</h2>
+            <div id="kittyList"></div>
+        </section>
+    </div>
+</main>
+
+<script>
+  // On-chain contract addresses from Truffle migrate
+  const ZOMBIE_OWNERSHIP_ADDRESS = "";
+  const LOCAL_KITTY_ADDRESS     = "";
+  const MARKETPLACE_ADDRESS     = "";
+  // Minimal ABIs for the functions we call
+  const ZOMBIE_OWNERSHIP_ABI = [
+    {
+      "constant": false,
+      "inputs": [{ "name": "_name", "type": "string" }],
+      "name": "createRandomZombie",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        { "name": "_zombieId", "type": "uint256" },
+        { "name": "_kittyId",  "type": "uint256" }
+      ],
+      "name": "feedOnKitty",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [{ "name": "_owner", "type": "address" }],
+      "name": "getZombiesByOwner",
+      "outputs": [{ "name": "", "type": "uint256[]" }],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [{ "name": "", "type": "uint256" }],
+      "name": "zombies",
+      "outputs": [
+        { "name": "name", "type": "string" },
+        { "name": "dna", "type": "uint256" },
+        { "name": "level", "type": "uint32" },
+        { "name": "readyTime", "type": "uint32" },
+        { "name": "winCount", "type": "uint16" },
+        { "name": "lossCount", "type": "uint16" }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        { "name": "_approved", "type": "address" },
+        { "name": "_tokenId", "type": "uint256" }
+      ],
+      "name": "approve",
+      "outputs": [],
+      "payable": true,
+      "stateMutability": "payable",
+      "type": "function"
+    }
+  ];
+  const MARKETPLACE_ABI = [
+    {
+      "constant": false,
+      "inputs": [
+        { "name": "_zombieId", "type": "uint256" },
+        { "name": "_price",   "type": "uint256" }
+      ],
+      "name": "listZombie",
+      "outputs": [],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [{ "name": "_zombieId", "type": "uint256" }],
+      "name": "buyZombie",
+      "outputs": [],
+      "payable": true,
+      "stateMutability": "payable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [{ "name": "", "type": "uint256" }],
+      "name": "listings",
+      "outputs": [
+        { "name": "seller", "type": "address" },
+        { "name": "price",  "type": "uint256" }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ];
+  let zombies = [];
+  let kitties = [];
+  let account = null;
+  let provider = null;
+  let signer = null;
+  let zombieContract = null;
+  let marketplaceContract = null;
+  // ---------- WALLET & CONTRACT SETUP ----------
+  async function connectWallet() {
+    if (!window.ethereum) {
+      alert("MetaMask not installed");
+      return;
+    }
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    signer  = provider.getSigner();
+    account = await signer.getAddress();
+    zombieContract = new ethers.Contract(
+      ZOMBIE_OWNERSHIP_ADDRESS,
+      ZOMBIE_OWNERSHIP_ABI,
+      signer
+    );
+    marketplaceContract = new ethers.Contract(
+      MARKETPLACE_ADDRESS,
+      MARKETPLACE_ABI,
+      signer
+    );
+    document.getElementById("result").innerText =
+      "Connected: " + account.substring(0, 6) + "...";
+    await refreshZombiesFromChain();
+  }
+  // ---------- ZOMBIES FROM CHAIN ----------
+  async function refreshZombiesFromChain() {
+    if (!zombieContract || !account) return;
+    zombies = [];
+    const ids = await zombieContract.getZombiesByOwner(account);
+    for (let i = 0; i < ids.length; i++) {
+      const id = ids[i].toNumber ? ids[i].toNumber() : ids[i];
+      const z  = await zombieContract.zombies(id);
+      let listing = { seller: ethers.constants.AddressZero, price: ethers.BigNumber.from(0) };
+      try {
+        listing = await marketplaceContract.listings(id);
+      } catch (e) {}
+
+      const displayName =
+        z.name && z.name.length ? z.name : `Zombie #${id}`;
+
+      zombies.push({
+        id,
+        name:   displayName,
+        dna:    z.dna.toString(),
+        attack: 5,
+        defense:5,
+        price:
+          listing &&
+          listing.seller !== ethers.constants.AddressZero &&
+          listing.price.gt(0)
+            ? listing.price
+            : null
+      });
+    }
+    displayZombies();
+  }
+  // ---------- CREATE ZOMBIES ON-CHAIN ----------
+  async function createZombie() {
+    if (!account || !zombieContract) {
+      alert("Connect MetaMask first");
+      return;
+    }
+    try {
+      const name = "Zombie";
+      const tx   = await zombieContract.createRandomZombie(name);
+      document.getElementById("result").innerText = "Creating zombie on-chain...";
+      await tx.wait();
+      await refreshZombiesFromChain();
+      document.getElementById("result").innerText = "Zombie created!";
+    } catch (err) {
+      console.error(err);
+      alert("Failed to create zombie, see console.");
+    }
+  }
+  function createArmy() {
+    for (let i = 0; i < 5; i++) {
+      createZombie();
+    }
+  }
+  // ---------- KITTIES (FRONTEND ONLY FOR NOW) ----------
+  async function createKitty() {
+    if (!account) {
+      alert("Connect MetaMask first");
+      return;
+    }
+    const dna     = Math.floor(Math.random() * 1e16);
+    const attack  = Math.floor(Math.random() * 10) + 1;
+    const defense = Math.floor(Math.random() * 10) + 1;
+    kitties.push({ name: "Kitty #" + (kitties.length + 1), dna, attack, defense });
+    displayKitties();
+  }
+  // ---------- LOCAL UI ACTIONS (RENAME / BATTLE) ----------
+  function renameZombie(index) {
+    const newName = prompt("Enter new zombie name");
+    if (!newName || newName.trim() === "") return;
+    zombies[index].name = newName;
+    displayZombies();
+  }
+  function deleteZombie(index) {
+    zombies.splice(index, 1);
+    displayZombies();
+  }
+  function zombieBattle() {
+    if (zombies.length < 2) {
+      alert("Need at least 2 zombies");
+      return;
+    }
+    let a = Math.floor(Math.random() * zombies.length);
+    let b;
+    do {
+      b = Math.floor(Math.random() * zombies.length);
+    } while (a === b);
+    document.getElementById("result").innerText =
+      "⚔️ " + zombies[a].name + " decimated " + zombies[b].name;
+  }
+  function zombieVsKitty() {
+    if (zombies.length === 0 || kitties.length === 0) {
+      alert("Create both first");
+      return;
+    }
+    const z = Math.floor(Math.random() * zombies.length);
+    const k = Math.floor(Math.random() * kitties.length);
+    if (zombies[z].attack > kitties[k].defense) {
+      document.getElementById("result").innerText =
+        zombies[z].name + " defeated " + kitties[k].name;
+    } else {
+      document.getElementById("result").innerText =
+        kitties[k].name + " defeated " + zombies[z].name;
+    }
+  }
+
+  // ---------- FEED ON KITTY (ON-CHAIN) ----------
+  async function feedOnKittyTx(index) {
+    if (!account || !zombieContract) {
+      alert("Connect MetaMask first");
+      return;
+    }
+    const zombie = zombies[index];
+    const zombieId = zombie.id;
+
+    const kittyIdStr = prompt("Enter on-chain kitty ID to feed on (e.g. 1):");
+    if (!kittyIdStr) return;
+    const kittyId = parseInt(kittyIdStr, 10);
+    if (isNaN(kittyId)) {
+      alert("Invalid kitty ID");
+      return;
+    }
+
+    try {
+      const tx = await zombieContract.feedOnKitty(zombieId, kittyId);
+      document.getElementById("result").innerText = "Feeding on kitty on-chain...";
+      await tx.wait();
+      await refreshZombiesFromChain();
+      document.getElementById("result").innerText = "New zombie created from kitty genes!";
+    } catch (err) {
+      console.error(err);
+      alert("Failed to feed on kitty, see console.");
+    }
+  }
+  // ---------- MARKETPLACE: SELL / BUY ----------
+  async function sellZombie(index) {
+    if (!account || !marketplaceContract || !zombieContract) {
+      alert("Connect MetaMask first");
+      return;
+    }
+    const zombie  = zombies[index];
+    const tokenId = zombie.id;
+    const priceEth = prompt("Enter sale price in ETH", "0.1");
+    if (!priceEth) return;
+    const priceWei = ethers.utils.parseEther(priceEth);
+    try {
+      const approveTx = await zombieContract.approve(MARKETPLACE_ADDRESS, tokenId);
+      await approveTx.wait();
+      const tx = await marketplaceContract.listZombie(tokenId, priceWei);
+      document.getElementById("result").innerText = "Listing zombie for sale...";
+      await tx.wait();
+      zombies[index].price = priceWei;
+      displayZombies();
+      document.getElementById("result").innerText = "Zombie listed!";
+    } catch (err) {
+      console.error(err);
+      alert("Failed to list zombie, see console.");
+    }
+  }
+  async function buyZombie(index) {
+    if (!account || !marketplaceContract) {
+      alert("Connect MetaMask first");
+      return;
+    }
+    const zombie = zombies[index];
+    if (!zombie.price) {
+      alert("Not for sale");
+      return;
+    }
+    const tokenId = zombie.id;
+    try {
+      const tx = await marketplaceContract.buyZombie(tokenId, { value: zombie.price });
+      document.getElementById("result").innerText = "Buying zombie...";
+      await tx.wait();
+      await refreshZombiesFromChain();
+      document.getElementById("result").innerText = "Zombie purchased!";
+    } catch (err) {
+      console.error(err);
+      alert("Failed to buy zombie, see console.");
+    }
+  }
+  // ---------- RENDERING ----------
+  function displayZombies() {
+    const list = document.getElementById("zombieList");
+    list.innerHTML = "";
+    zombies.forEach((z, i) => {
+      const priceLabel = z.price ? ethers.utils.formatEther(z.price) + " ETH" : "";
+      list.innerHTML += `
+        <div class="zombie-card">
+          <img src="https://robohash.org/${z.dna}?set=set2">
+          <div class="zombie-info">
+            <b>${z.name}</b><br>
+            <small style="color:#94a3b8">DNA: ${z.dna}</small><br>
+            ${priceLabel ? `<small style="color:#facc15">Price: ${priceLabel}</small>` : ``}
+            <div class="zombie-action-group">
+              <button class="zombie-mini-btn" onclick="renameZombie(${i})">Rename</button>
+              <button class="zombie-mini-btn" onclick="deleteZombie(${i})">Delete</button>
+              <button class="zombie-mini-btn" onclick="sellZombie(${i})">Sell</button>
+              ${z.price ? '<button class="zombie-mini-btn buy-button" onclick="buyZombie(' + i + ')">Buy</button>' : ''}
+            </div>
+          </div>
+        </div>`;
+    });
+    document.getElementById("zombieCounter").innerText = zombies.length;
+  }
+  function displayKitties() {
+    const list = document.getElementById("kittyList");
+    list.innerHTML = "";
+    kitties.forEach((k) => {
+      list.innerHTML += `
+        <div class="kitty-card">
+          <img src="https://robohash.org/${k.dna}?set=set4">
+          <div class="kitty-info">
+            <b>${k.name}</b><br>
+            <small style="color:#94a3b8">DNA: ${k.dna}</small>
+          </div>
+        </div>`;
+    });
+    document.getElementById("kittyCounter").innerText = kitties.length;
+  }
+  </script>
+
+</body>
+</html>
