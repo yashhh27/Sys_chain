@@ -200,11 +200,11 @@ Add a section like this at the top of readme.md and fill in your real details:
   **CWID:** 861444743  
   **Email:** yashhsavaliya27@csu.fullerton.edu
 
-**Name:** Siddhesh Khatavkar 
+ **Name:** Siddhesh Khatavkar 
   **CWID:** 819929126  
   **Email:** siddheshkhatavkar@csu.fullerton.edu
 
-**Name:** Sameera Kudligi Mulimani 
+ **Name:** Sameera Kudligi Mulimani 
   **CWID:** 813933314  
   **Email:** sameerakm19@csu.fullerton.edu
 
